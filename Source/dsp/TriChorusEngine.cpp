@@ -8,7 +8,7 @@ namespace
     constexpr double kSmoothingSeconds = 0.02;
     constexpr double kCompressorMs     = 12.0;
     constexpr float  kWetGain          = 0.8f;
-    constexpr float  kHfLossRatio      = 0.3f;   // cutoff redaman HF = rasio × clock
+    constexpr float  kHfLossRatio      = 0.3f;   // HF-loss cutoff = ratio × clock
     constexpr uint32_t kSeed           = 0x5EEDC0DEu;
 }
 
@@ -22,7 +22,7 @@ void TriChorusEngine::prepare (double newSampleRate, int /*maxBlockSize*/)
     for (auto& s : intensity)
         s.prepare (sampleRate, kSmoothingSeconds);
 
-    // Delay maksimum: delay tengah ÷ (1 − deviasi maks − drift maks) + margin.
+    // Maximum delay: centre delay ÷ (1 − max deviation − max drift) + margin.
     const double maxDelaySeconds = kMaxDelayMs * 0.001 / (1.0 - kMaxClockDev - 0.1) * 1.25;
     delayLine.prepare ((int) std::ceil (maxDelaySeconds * sampleRate) + 8);
 
@@ -94,12 +94,12 @@ void TriChorusEngine::updateSlowParameters (int samplesElapsed) noexcept
     for (auto& f : reconFilter)
         f.setCutoff (sampleRate, toneHz);
 
-    // Satu knob Character → tiga besaran internal.
+    // One Character knob → three internal amounts.
     saturation.setAmount (ch);
     noiseAmp    = ch > 1.0e-4f ? dbToGain (-88.0f + 18.0f * ch) : 0.0f;
     driftAmount = 0.12f * ch;
 
-    // Mismatch konstanta waktu expander yang disengaja ("napas").
+    // Deliberate expander time-constant mismatch ("breathing").
     const float expanderMs = (float) kCompressorMs * (1.0f + 0.5f * ch);
     if (std::abs (expanderMs - lastExpanderMs) > 0.01f)
     {
@@ -129,14 +129,14 @@ void TriChorusEngine::processSubBlock (const float* inL, const float* inR, float
         const float dryL = inL[n] * gIn;
         const float dryR = inR[n] * gIn;
 
-        // --- Input stage + kompresor bersama + AA filter → BBD
+        // --- Input stage + shared compressor + AA filter → BBD
         float x = softClip (dcBlocker.process (0.5f * (dryL + dryR)));
         x = aaFilter.process (compressor.process (x));
 
         const float noise = noiseAmp > 0.0f ? noiseAmp * noiseRng.nextBipolar() : 0.0f;
         delayLine.write (x + noise);
 
-        // --- Tiga voice
+        // --- Three voices
         lfo.setRate (rate.next());
         const float baseClock = kStages / (2.0f * delayMs.next() * 0.001f);
 
@@ -147,7 +147,7 @@ void TriChorusEngine::processSubBlock (const float* inL, const float* inR, float
             const float target = intensity[vi].next() * lfo.value (v) + driftAmount * lfo.driftValue (v);
             const float mod    = modSmoother[vi].process (target, modSmoothCoef);
 
-            // Modulasi di domain clock; waktu delay = N / (2 f_clock).
+            // Modulate in the clock domain; delay time = N / (2 f_clock).
             const float clock  = baseClock * std::max (0.5f, 1.0f + kMaxClockDev * mod);
             const float delaySamples = kStages / (2.0f * clock) * fs;
 

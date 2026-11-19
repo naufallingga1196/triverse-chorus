@@ -5,7 +5,7 @@
 namespace trichorus::dsp
 {
 
-// Biquad TDF-II. Koefisien boleh diperbarui tanpa reset state.
+// TDF-II biquad. Coefficients may be updated without resetting state.
 class Biquad
 {
 public:
@@ -39,7 +39,7 @@ private:
     float z1 = 0.0f, z2 = 0.0f;
 };
 
-// Low-pass Butterworth 4-kutub (dua biquad) — dipakai untuk AA dan recon filter.
+// 4-pole Butterworth low-pass (two biquads) — used for the AA and recon filters.
 class BbdFilter
 {
 public:

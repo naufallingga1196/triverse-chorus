@@ -14,7 +14,7 @@ namespace
 
         if (lit)
         {
-            // Pendar
+            // Glow
             g.setGradientFill (ColourGradient (colour.withAlpha (0.45f), centre.x, centre.y,
                                                colour.withAlpha (0.0f), centre.x + radius * 3.0f, centre.y, true));
             g.fillEllipse (r.expanded (radius * 2.0f));
@@ -62,7 +62,7 @@ void EffectButton::paintButton (Graphics& g, bool highlighted, bool down)
     g.setGradientFill (cg);
     g.fillRoundedRectangle (b, 2.0f);
 
-    // Tekstur lensa: kisi halus
+    // Lens texture: fine grid
     g.setColour (Colours::black.withAlpha (0.12f));
     for (float yy = b.getY() + 2.0f; yy < b.getBottom(); yy += 3.0f)
         g.drawHorizontalLine ((int) yy, b.getX() + 1.0f, b.getRight() - 1.0f);
@@ -107,7 +107,7 @@ void ShapeSelector::paint (Graphics& g)
         drawLed (g, { cx, 22.0f }, 3.6f, palette::ledRed, selected == i);
     }
 
-    // Tombol tekan bulat
+    // Round push button
     auto b = buttonBounds();
     g.setColour (Colours::black);
     g.fillEllipse (b.expanded (2.5f));
@@ -129,7 +129,7 @@ void ShapeSelector::mouseDown (const MouseEvent& e)
         return;
 
     pressed = true;
-    // Klik pada LED/label memilih langsung, klik tombol berputar ke berikutnya.
+    // Clicking an LED/label selects it directly; clicking the button cycles to the next.
     const int next = e.position.y <= 30.0f ? jlimit (0, 2, (int) (e.position.x / (getWidth() / 3.0f)))
                                            : (selected + 1) % 3;
     attachment.setValueAsCompleteGesture ((float) next);
@@ -154,7 +154,7 @@ void LevelMeter::setLevels (float dbLeft, float dbRight)
 
 void LevelMeter::paintBar (Graphics& g, Rectangle<float> window, float db) const
 {
-    // Jendela kaca gelap
+    // Dark glass window
     g.setColour (Colour (0xff2c2d30));
     g.fillRect (window.expanded (1.5f));
     g.setColour (palette::meterWindow);
@@ -187,7 +187,7 @@ void LevelMeter::paintBar (Graphics& g, Rectangle<float> window, float db) const
         }
     }
 
-    // Pantulan kaca
+    // Glass reflection
     g.setGradientFill (ColourGradient (Colours::white.withAlpha (0.10f), window.getX(), window.getY(),
                                        Colours::transparentWhite, window.getX(), window.getCentreY(), false));
     g.fillRect (window);
@@ -217,7 +217,7 @@ void LevelMeter::paint (Graphics& g)
     for (int i = 0; i < n; ++i)
     {
         const float v = kScale[(size_t) i];
-        // Label hanya titik utama agar tidak berdempetan; LED tetap 13.
+        // Label only the main points so they don't crowd; there are still 13 LEDs.
         if (v == -15.0f || v == -7.0f || v == -2.0f || v == 2.0f)
             continue;
         const String text = v > 0.0f ? "+" + String ((int) v) : String ((int) v);

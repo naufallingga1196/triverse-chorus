@@ -6,9 +6,9 @@ project (TriVerseChorus VERSION 0.1.0 LANGUAGES C CXX)
 
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
-set (CMAKE_EXPORT_COMPILE_COMMANDS ON) # untuk IntelliSense / clangd
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON) # for IntelliSense / clangd
 
-# Windows: tautkan runtime C++ secara statis agar pengguna tidak perlu memasang
+# Windows: link the C++ runtime statically so users don't need to install the
 # Visual C++ Redistributable.
 if (MSVC)
     set (CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -18,7 +18,7 @@ option (TRICHORUS_BUILD_TESTS "Build DSP unit tests" ON)
 option (TRICHORUS_COPY_PLUGIN "Copy plugin to ~/Library/Audio/Plug-Ins after build" ON)
 
 # ------------------------------------------------------------------------------
-# JUCE: pakai salinan lokal jika ada (-DJUCE_DIR=...), selain itu unduh.
+# JUCE: use a local copy if given (-DJUCE_DIR=...), otherwise download it.
 set (JUCE_DIR "" CACHE PATH "Path to a local JUCE checkout")
 
 if (JUCE_DIR)
@@ -33,7 +33,7 @@ else()
 endif()
 
 # ------------------------------------------------------------------------------
-# Library DSP murni (tanpa JUCE) — dipakai plugin dan unit test.
+# Pure DSP library (no JUCE) — used by the plugin and the unit tests.
 add_library (trichorus_dsp STATIC Source/dsp/TriChorusEngine.cpp)
 target_include_directories (trichorus_dsp PUBLIC Source)
 set_target_properties (trichorus_dsp PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -84,7 +84,7 @@ if (TRICHORUS_BUILD_TESTS)
 endif()
 
 # ------------------------------------------------------------------------------
-# Tool render GUI ke PNG (untuk review tampilan tanpa DAW).
+# GUI-to-PNG render tool (for reviewing the look without a DAW).
 option (TRICHORUS_BUILD_TOOLS "Build developer tools (GUI snapshot)" OFF)
 
 if (TRICHORUS_BUILD_TOOLS)

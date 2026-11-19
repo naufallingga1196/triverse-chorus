@@ -5,15 +5,15 @@
 namespace trichorus::dsp
 {
 
-// Soft clip input stage: headroom ~ +6 dB, hampir transparan di level normal.
+// Input-stage soft clip: ~ +6 dB headroom, nearly transparent at normal levels.
 inline float softClip (float x) noexcept
 {
     constexpr float headroom = 2.0f;
     return headroom * std::tanh (x / headroom);
 }
 
-// Saturasi BBD: tanh sedikit asimetris (bias) untuk harmonik genap.
-// Gain sinyal kecil ≈ 1, offset DC dari bias dibuang.
+// BBD saturation: slightly asymmetric tanh (bias) for even harmonics.
+// Small-signal gain ≈ 1; the DC offset from the bias is removed.
 struct BbdSaturation
 {
     float drive = 1.0f, bias = 0.0f, biasOffset = 0.0f;

@@ -7,8 +7,8 @@
 namespace trichorus::dsp
 {
 
-// V1 = kiri, V2 = tengah, V3 = kanan. Width 0 → semua di tengah.
-// Hukum pan constant-power (−3 dB di tengah).
+// V1 = left, V2 = centre, V3 = right. Width 0 → all centred.
+// Constant-power pan law (−3 dB at centre).
 struct PanMatrix
 {
     static constexpr int kNumVoices = 3;

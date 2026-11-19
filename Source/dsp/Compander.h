@@ -5,7 +5,7 @@
 namespace trichorus::dsp
 {
 
-// Detektor rata-rata (rectifier + one-pole), bukan true RMS — seperti NE570.
+// Average detector (rectifier + one-pole), not true RMS — like the NE570.
 class EnvelopeFollower
 {
 public:
@@ -27,15 +27,15 @@ private:
     float coef = 0.999f, env = 0.0f;
 };
 
-// Topologi feedforward: detektor membaca input masing-masing tahap, sehingga
-// expander adalah kebalikan persis dari compressor (selama konstanta waktu sama).
+// Feedforward topology: each detector reads its own stage's input, so the
+// expander is the exact inverse of the compressor (as long as time constants match).
 namespace compander
 {
-    constexpr float kReference = 0.1f;               // titik unity (rata-rata |x|)
-    constexpr float kFloor     = kReference * 1e-3f; // batas gain kompresor: +30 dB
+    constexpr float kReference = 0.1f;               // unity point (mean |x|)
+    constexpr float kFloor     = kReference * 1e-3f; // compressor gain limit: +30 dB
 }
 
-// Kompresor 2:1 — g = 1 / sqrt(env / ref)
+// 2:1 compressor — g = 1 / sqrt(env / ref)
 class Compressor
 {
 public:

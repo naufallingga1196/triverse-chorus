@@ -1,6 +1,6 @@
-; Installer Windows (Inno Setup 6.3+). Dikompilasi dari folder proyek:
+; Windows installer (Inno Setup 6.3+). Compile from the project folder:
 ;   ISCC /DAppVersion=0.1.0 tools\windows\installer.iss
-; Hasil: dist\TriVerse-Chorus-<versi>-Windows-Setup.exe
+; Output: dist\TriVerse-Chorus-<version>-Windows-Setup.exe
 
 #ifndef AppVersion
   #define AppVersion "0.1.0"

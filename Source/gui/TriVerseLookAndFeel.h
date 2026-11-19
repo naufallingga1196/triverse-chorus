@@ -5,7 +5,7 @@
 namespace trichorus::gui
 {
 
-// Gaya knob ditentukan lewat properti slider "knobStyle": "cyan" atau "black".
+// Knob style is chosen via the slider property "knobStyle": "cyan" or "black".
 class TriVerseLookAndFeel final : public juce::LookAndFeel_V4
 {
 public:

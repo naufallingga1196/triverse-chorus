@@ -1,5 +1,5 @@
-// Render editor plugin ke PNG tanpa membuka jendela (untuk review GUI).
-// Pemakaian: trichorus_snapshot <output.png> [skala]
+// Render the plugin editor to a PNG without opening a window (for GUI review).
+// Usage: trichorus_snapshot <output.png> [scale]
 
 #include "PluginEditor.h"
 #include "PluginProcessor.h"

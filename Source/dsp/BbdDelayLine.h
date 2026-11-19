@@ -6,7 +6,7 @@
 namespace trichorus::dsp
 {
 
-// Delay line sirkular satu-tulis banyak-baca dengan interpolasi Hermite 4-titik.
+// Circular single-write, multi-read delay line with 4-point Hermite interpolation.
 class BbdDelayLine
 {
 public:
@@ -34,7 +34,7 @@ public:
         writeIndex = (writeIndex + 1) & mask;
     }
 
-    // delaySamples diukur dari sampel yang terakhir ditulis (0 = sampel terbaru).
+    // delaySamples is measured from the most recently written sample (0 = newest).
     float readHermite (float delaySamples) const noexcept
     {
         const float d    = std::clamp (delaySamples, 1.0f, maxDelay);

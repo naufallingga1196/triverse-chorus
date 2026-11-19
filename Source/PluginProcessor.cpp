@@ -71,7 +71,7 @@ void TriChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     if (buffer.getNumChannels() < 2 || numSamples == 0)
         return;
 
-    // Input mono → salin ke kanan.
+    // Mono input → copy to the right channel.
     if (numInputs == 1)
         buffer.copyFrom (1, 0, buffer, 0, 0, numSamples);
 
@@ -86,7 +86,7 @@ void TriChorusProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     auto* right = buffer.getWritePointer (1);
     engine.process (left, right, left, right, numSamples);
 
-    // Crossfade ke sinyal kering saat bypass.
+    // Crossfade to the dry signal when bypassed.
     bypassMix.setTargetValue (bypassParam->get() ? 1.0f : 0.0f);
     if (bypassMix.isSmoothing() || bypassMix.getTargetValue() > 0.0f)
     {

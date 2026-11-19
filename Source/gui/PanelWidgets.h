@@ -8,8 +8,8 @@
 namespace trichorus::gui
 {
 
-// Tombol kotak merah bercahaya (gaya tombol power hardware).
-// Toggle state = parameter bypass, jadi lampu menyala saat efek AKTIF (bypass off).
+// Glowing red square button (hardware power-button style).
+// Toggle state = bypass parameter, so the lamp is lit when the effect is ACTIVE (bypass off).
 class EffectButton final : public juce::Button
 {
 public:
@@ -17,7 +17,7 @@ public:
     void paintButton (juce::Graphics&, bool highlighted, bool down) override;
 };
 
-// Tombol bulat + tiga LED untuk memilih bentuk LFO (klik = ganti ke berikutnya).
+// Round button + three LEDs to choose the LFO shape (click = next shape).
 class ShapeSelector final : public juce::Component,
                             public juce::SettableTooltipClient
 {
@@ -36,7 +36,7 @@ private:
     bool pressed = false;
 };
 
-// Dua bar LED horizontal dengan skala −20 … +6 dB.
+// Two horizontal LED bars with a −20 … +6 dB scale.
 class LevelMeter final : public juce::Component
 {
 public:

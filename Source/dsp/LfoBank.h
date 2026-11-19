@@ -9,7 +9,7 @@ namespace trichorus::dsp
 
 enum class LfoShape { Sine = 0, Triangle, Analog };
 
-// Nilai acak halus (interpolasi smoothstep antar-target acak) untuk drift.
+// Smooth random value (smoothstep interpolation between random targets) for drift.
 class SmoothRandom
 {
 public:
@@ -42,7 +42,7 @@ private:
     float increment = 0.0f, from = 0.0f, to = 0.0f, t = 0.0f;
 };
 
-// Tiga LFO dengan satu fase master dan offset tetap (default 0°, 120°, 240°).
+// Three LFOs sharing one master phase with fixed offsets (default 0°, 120°, 240°).
 class LfoBank
 {
 public:
@@ -86,7 +86,7 @@ public:
         if (s == LfoShape::Sine)
             return std::sin (kTwoPi * p);
 
-        // Segitiga sefase dengan sinus (0 di p = 0, naik).
+        // Triangle in phase with the sine (0 at p = 0, rising).
         const float tri = p < 0.25f ? 4.0f * p
                         : p < 0.75f ? 2.0f - 4.0f * p
                                     : 4.0f * p - 4.0f;
@@ -94,7 +94,7 @@ public:
         if (s == LfoShape::Triangle)
             return tri;
 
-        // "Analog": puncak segitiga dibulatkan seperti LFO integrator op-amp.
+        // "Analog": triangle peaks rounded like an op-amp integrator LFO.
         return tri * (1.5f - 0.5f * tri * tri);
     }
 

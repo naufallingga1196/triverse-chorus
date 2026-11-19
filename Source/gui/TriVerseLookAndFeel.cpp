@@ -27,7 +27,7 @@ Path TriVerseLookAndFeel::flutedOutline (Point<float> centre, float radius, int 
     for (int i = 0; i <= total; ++i)
     {
         const float a = MathConstants<float>::twoPi * (float) i / (float) total;
-        // Profil gerigi bulat: cos dipangkas → alur sempit, punggung lebar.
+        // Rounded flute profile: shaped cosine → narrow grooves, wide ridges.
         const float wave = 0.5f + 0.5f * std::cos (a * (float) flutes);
         const float r = radius - depth * (1.0f - std::pow (wave, 0.35f));
         const auto pt = centre.getPointOnCircumference (r, a);
@@ -49,7 +49,7 @@ void TriVerseLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width
     const auto centre = bounds.getCentre();
     const float angle = startAngle + sliderPos * (endAngle - startAngle);
 
-    // Bayangan jatuh di panel
+    // Drop shadow on the panel
     {
         Path shadowShape;
         shadowShape.addEllipse (Rectangle<float> (radius * 2.0f, radius * 2.0f).withCentre (centre));
@@ -57,7 +57,7 @@ void TriVerseLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width
             .drawForPath (g, shadowShape);
     }
 
-    // Rok bergerigi (skirt)
+    // Fluted skirt
     const auto skirt = flutedOutline (centre, radius, cyan ? 18 : 22, radius * 0.07f);
     const Colour skirtBase = cyan ? palette::cyanDark : Colour (0xff0e0e10);
     g.setGradientFill (ColourGradient (skirtBase.brighter (cyan ? 0.55f : 0.35f), centre.x, centre.y - radius,
@@ -66,7 +66,7 @@ void TriVerseLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width
     g.setColour (Colours::black.withAlpha (0.6f));
     g.strokePath (skirt, PathStrokeType (0.8f));
 
-    // Tutup (cap) dengan highlight radial dari kiri atas
+    // Cap with a radial highlight from the top left
     const float capR = radius * (cyan ? 0.80f : 0.72f);
     const auto cap = Rectangle<float> (capR * 2.0f, capR * 2.0f).withCentre (centre);
 
@@ -86,20 +86,20 @@ void TriVerseLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width
     }
     g.fillEllipse (cap);
 
-    // Cincin tepi cap
+    // Cap edge ring
     g.setColour (Colours::black.withAlpha (0.45f));
     g.drawEllipse (cap, 1.0f);
     g.setColour (Colours::white.withAlpha (cyan ? 0.35f : 0.12f));
     g.drawEllipse (cap.reduced (1.0f), 0.7f);
 
-    // Kilap specular kecil
+    // Small specular gloss
     const auto gloss = Rectangle<float> (capR * 0.9f, capR * 0.5f)
                            .withCentre ({ centre.x - capR * 0.18f, centre.y - capR * 0.45f });
     g.setGradientFill (ColourGradient (Colours::white.withAlpha (cyan ? 0.45f : 0.18f), gloss.getCentreX(), gloss.getY(),
                                        Colours::transparentWhite, gloss.getCentreX(), gloss.getBottom(), false));
     g.fillEllipse (gloss);
 
-    // Garis penunjuk
+    // Pointer line
     const auto inner = centre.getPointOnCircumference (capR * 0.25f, angle);
     const auto outer = centre.getPointOnCircumference (radius * 0.94f, angle);
     g.setColour (Colours::black.withAlpha (0.5f));

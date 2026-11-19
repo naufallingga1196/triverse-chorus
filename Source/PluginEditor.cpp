@@ -64,7 +64,7 @@ void FrontPanel::setupKnob (Knob& k, const char* paramId, String title, String m
     if (auto* param = processor.getState().getParameter (paramId))
     {
         s.setDoubleClickReturnValue (true, param->convertFrom0to1 (param->getDefaultValue()));
-        s.setTooltip (param->getName (64) + " (double-click untuk reset)");
+        s.setTooltip (param->getName (64) + " (double-click to reset)");
     }
 }
 
@@ -97,7 +97,7 @@ void FrontPanel::resized()
     placeKnob (character, { column (voicingArea, 1, 3), kKnobRow });
     placeKnob (width,     { column (voicingArea, 2, 3), kKnobRow });
 
-    // Intensity I–III (84 px tiap kolom) + trim Delay (64) + Rate (84)
+    // Intensity I–III (84 px per column) + Delay trim (64) + Rate (84)
     const int x0 = intensityArea.getX();
     placeKnob (int1,  { x0 + 42,  kKnobRow });
     placeKnob (int2,  { x0 + 126, kKnobRow });
@@ -124,7 +124,7 @@ void FrontPanel::paintScrew (Graphics& g, Point<float> c, float r, float slotAng
                                        Colour (0xff3e4043), head.getRight(), head.getBottom(), false));
     g.fillEllipse (head);
 
-    // Kepala phillips
+    // Phillips head
     g.setColour (Colour (0xff1b1c1e));
     for (float a : { slotAngle, slotAngle + MathConstants<float>::halfPi })
     {
@@ -138,7 +138,7 @@ void FrontPanel::paintEar (Graphics& g, Rectangle<float> ear) const
     g.setGradientFill (ColourGradient (palette::earTop, 0.0f, ear.getY(), palette::earBottom, 0.0f, ear.getBottom(), false));
     g.fillRect (ear);
 
-    // Lubang rak berbentuk oval + sekrup
+    // Oval rack slots + screws
     for (float cy : { ear.getY() + 46.0f, ear.getBottom() - 46.0f })
     {
         const auto slot = Rectangle<float> (22.0f, 13.0f).withCentre ({ ear.getCentreX(), cy });
@@ -149,7 +149,7 @@ void FrontPanel::paintEar (Graphics& g, Rectangle<float> ear) const
         paintScrew (g, { ear.getCentreX() + 2.0f, cy }, 5.6f, 0.4f + cy * 0.01f);
     }
 
-    // Tepi lipatan
+    // Folded edge
     g.setColour (Colours::white.withAlpha (0.06f));
     g.drawVerticalLine ((int) ear.getX(), ear.getY(), ear.getBottom());
     g.setColour (Colours::black.withAlpha (0.6f));
@@ -176,7 +176,7 @@ void FrontPanel::paintKnobDecor (Graphics& g, const Knob& k) const
     const auto c = b.getCentre();
     const float r = (k.big ? kBigKnob : kSmallKnob) * 0.5f;
 
-    // Titik skala 0–10
+    // Scale dots 0–10
     g.setColour (palette::legend);
     for (int i = 0; i <= 10; ++i)
     {
@@ -195,7 +195,7 @@ void FrontPanel::paintKnobDecor (Graphics& g, const Knob& k) const
 
     if (k.big && k.title.isNotEmpty())
     {
-        // Angka romawi / judul di atas knob
+        // Roman numeral / title above the knob
         g.setFont (legendFont (k.title.length() > 3 ? 11.0f : 10.0f));
         g.drawText (k.title, Rectangle<float> (60.0f, 12.0f).withCentre ({ c.x - (k.title.length() > 3 ? 0.0f : r * 0.9f), c.y - r - 6.0f }),
                     Justification::centred);
@@ -221,7 +221,7 @@ void FrontPanel::paintBrand (Graphics& g, Rectangle<float> area) const
     g.setFont (legendFont (30.0f));
     g.drawText ("TV-3", Rectangle<float> (x - 1.0f, box.getY() + 56.0f, 100.0f, 32.0f), Justification::centredLeft);
 
-    // Tiga gelombang bergeser 120° — simbol tri-phase
+    // Three waves offset by 120° — the tri-phase symbol
     const float waveY = box.getY() + 100.0f;
     const float waveW = 76.0f;
     const Colour waveColours[] = { palette::cyan, palette::cyanLight, palette::cyan.withAlpha (0.6f) };
@@ -249,7 +249,7 @@ void FrontPanel::paint (Graphics& g)
     const auto bounds = getLocalBounds().toFloat();
     const auto face = bounds.reduced ((float) kEarWidth, 0.0f);
 
-    // Plat depan: hitam semi-matte dengan gradasi tipis dan tekstur sapuan halus
+    // Front plate: semi-matte black with a subtle gradient and fine brushed texture
     g.setGradientFill (ColourGradient (palette::panelTop, 0.0f, 0.0f, palette::panelBottom, 0.0f, bounds.getBottom(), false));
     g.fillRect (face);
 
@@ -262,7 +262,7 @@ void FrontPanel::paint (Graphics& g)
         g.fillRect (xx, yy, 6.0f + grain.nextFloat() * 30.0f, 0.6f);
     }
 
-    // Bevel atas/bawah plat
+    // Top/bottom plate bevel
     g.setColour (Colours::white.withAlpha (0.10f));
     g.drawHorizontalLine (0, face.getX(), face.getRight());
     g.setColour (Colours::black);
@@ -271,7 +271,7 @@ void FrontPanel::paint (Graphics& g)
     paintEar (g, bounds.withWidth ((float) kEarWidth));
     paintEar (g, bounds.withLeft (bounds.getRight() - (float) kEarWidth));
 
-    // Sekrup sudut plat
+    // Plate corner screws
     for (float sx : { face.getX() + 10.0f, face.getRight() - 10.0f })
         for (float sy : { 9.0f, bounds.getBottom() - 9.0f })
             paintScrew (g, { sx, sy }, 4.2f, sx * 0.03f + sy * 0.05f);
@@ -284,7 +284,7 @@ void FrontPanel::paint (Graphics& g)
     paintSection (g, meterArea, "Out Level");
     paintSection (g, effectArea, "Effect");
 
-    // Kotak Intensity/Delay/Rate tanpa garis vertikal pemisah, seperti di hardware
+    // Intensity/Delay/Rate box without vertical dividers, as on the hardware
     paintSection (g, intensityArea, {});
     {
         const float x0 = (float) intensityArea.getX();
@@ -293,7 +293,7 @@ void FrontPanel::paint (Graphics& g)
         g.setFont (legendFont (11.0f));
         g.drawText ("Intensity", Rectangle<float> (x0 + 16.0f, 18.0f, 220.0f, 14.0f), Justification::centred);
 
-        // Braket di atas I–III
+        // Bracket above I–III
         Path bracket;
         bracket.startNewSubPath (x0 + 22.0f, y + 5.0f);
         bracket.lineTo (x0 + 22.0f, y);
@@ -308,7 +308,7 @@ void FrontPanel::paint (Graphics& g)
     for (auto* k : { &int1, &int2, &int3, &delay, &rate, &tone, &character, &width, &input, &mix, &output })
         paintKnobDecor (g, *k);
 
-    // Label tambahan
+    // Extra labels
     g.setColour (palette::legend);
     g.setFont (legendFont (7.5f));
     g.drawText ("SELECT", Rectangle<float> ((float) shapeArea.getX(), 154.0f, (float) shapeArea.getWidth(), 10.0f), Justification::centred);
@@ -316,7 +316,7 @@ void FrontPanel::paint (Graphics& g)
 
     g.setColour (palette::legendDim);
     g.setFont (legendFont (7.0f, false));
-    g.drawText (String (CharPointer_UTF8 ("STEREO BBD CHORUS  \xc2\xb7  3 VOICE / 120\xc2\xb0")), // · dan °
+    g.drawText (String (CharPointer_UTF8 ("STEREO BBD CHORUS  \xc2\xb7  3 VOICE / 120\xc2\xb0")), // · and °
                 Rectangle<float> ((float) meterArea.getX(), 150.0f, (float) meterArea.getWidth(), 10.0f), Justification::centred);
 }
 
@@ -352,7 +352,7 @@ void TriChorusEditor::resized()
 
 void TriChorusEditor::timerCallback()
 {
-    // Balistik meter: naik instan, turun ~20 dB/detik.
+    // Meter ballistics: instant attack, ~20 dB/s fall.
     constexpr float fallPerTick = 20.0f / 30.0f;
     for (int ch = 0; ch < 2; ++ch)
     {

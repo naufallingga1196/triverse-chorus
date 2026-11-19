@@ -12,8 +12,8 @@ constexpr float kTwoPi = 2.0f * kPi;
 
 inline float dbToGain (float db) noexcept { return std::pow (10.0f, db * 0.05f); }
 
-// Generator acak deterministik (xorshift32). Seed tetap per instance agar
-// render offline selalu identik.
+// Deterministic random generator (xorshift32). A fixed seed per instance keeps
+// offline renders identical.
 class Random
 {
 public:
@@ -39,7 +39,7 @@ private:
     uint32_t state;
 };
 
-// Smoother linear sederhana (pengganti juce::SmoothedValue agar DSP bebas JUCE).
+// Simple linear smoother (replaces juce::SmoothedValue so the DSP stays JUCE-free).
 class LinearSmoother
 {
 public:
@@ -75,7 +75,7 @@ public:
         return current;
     }
 
-    // Maju n sampel sekaligus (untuk parameter yang diperbarui per sub-blok).
+    // Advance n samples at once (for parameters updated per sub-block).
     float skip (int n) noexcept
     {
         if (remaining > 0)
@@ -94,14 +94,14 @@ private:
     int remaining = 0, rampSteps = 1;
 };
 
-// One-pole low-pass dengan koefisien yang boleh berubah tiap sampel.
+// One-pole low-pass whose coefficient may change every sample.
 struct OnePoleLowpass
 {
     float z = 0.0f;
 
     void reset() noexcept { z = 0.0f; }
 
-    // a = 1 − e^(−w), didekati dengan w / (1 + w) — cukup akurat dan murah.
+    // a = 1 − e^(−w), approximated by w / (1 + w) — accurate enough and cheap.
     static float coefficientFor (float cutoffHz, float sampleRate) noexcept
     {
         const float w = kTwoPi * cutoffHz / sampleRate;
@@ -115,7 +115,7 @@ struct OnePoleLowpass
     }
 };
 
-// DC blocker (HPF satu-pole, ~10 Hz).
+// DC blocker (one-pole HPF, ~10 Hz).
 class DcBlocker
 {
 public:

@@ -1,4 +1,4 @@
-// Unit test DSP tanpa framework: jalankan `ctest` atau ./trichorus_tests.
+// Framework-free DSP unit tests: run `ctest` or ./trichorus_tests.
 
 #include "dsp/BbdDelayLine.h"
 #include "dsp/BbdFilter.h"
@@ -28,17 +28,17 @@ static void testDelayLineIntegerAndFractional()
     BbdDelayLine d;
     d.prepare (64);
 
-    // Impuls → pada delay integer 10 harus keluar tepat 1.
+    // Impulse → at an integer delay of 10 the output must be exactly 1.
     d.write (1.0f);
     for (int i = 0; i < 10; ++i)
         d.write (0.0f);
     CHECK (std::abs (d.readHermite (10.0f) - 1.0f) < 1e-6f, "integer delay = %f", d.readHermite (10.0f));
 
-    // Ramp linear → interpolasi Hermite harus eksak pada setengah sampel.
+    // Linear ramp → Hermite interpolation must be exact at half a sample.
     d.reset();
     for (int i = 0; i < 40; ++i)
         d.write ((float) i);
-    const float v = d.readHermite (5.5f); // terbaru 39 → 39 − 5.5
+    const float v = d.readHermite (5.5f); // newest is 39 → 39 − 5.5
     CHECK (std::abs (v - 33.5f) < 1e-4f, "ramp interp = %f", v);
 }
 
@@ -81,7 +81,7 @@ static void testCompanderIsInverse()
     c.reset();
     e.reset();
 
-    // Level steady-state diukur setelah settle.
+    // Steady-state level measured after settling.
     for (float amp : { 0.5f, 0.05f })
     {
         float peakIn = 0.0f, peakComp = 0.0f, peakOut = 0.0f;
@@ -101,7 +101,7 @@ static void testCompanderIsInverse()
         (void) peakComp;
     }
 
-    // Rasio 2:1 — input turun 20 dB, output kompresor turun ~10 dB.
+    // 2:1 ratio — input drops 20 dB, compressor output drops ~10 dB.
     auto compressedPeak = [&] (float amp)
     {
         Compressor cc;
@@ -127,7 +127,7 @@ static void testLfoPhaseOffsets()
     lfo.setRate (1.0f);
     lfo.reset (1);
 
-    // Fase 0: sin(0), sin(120°), sin(240°)
+    // Phase 0: sin(0), sin(120°), sin(240°)
     CHECK (std::abs (lfo.value (0)) < 1e-6f, "v0 = %f", lfo.value (0));
     CHECK (std::abs (lfo.value (1) - 0.8660254f) < 1e-4f, "v1 = %f", lfo.value (1));
     CHECK (std::abs (lfo.value (2) + 0.8660254f) < 1e-4f, "v2 = %f", lfo.value (2));
@@ -165,7 +165,7 @@ static void testEngineStability()
 
         for (int block = 0; block < 400; ++block)
         {
-            // Otomasi acak semua parameter tiap blok (stress test).
+            // Random automation of every parameter each block (stress test).
             if (block % 3 == 0)
             {
                 p.inputDb   = 12.0f * rng.nextBipolar();
@@ -181,7 +181,7 @@ static void testEngineStability()
                 engine.setParameters (p);
             }
 
-            const int n = 1 + (int) (rng.nextUInt() % 512); // ukuran blok berubah-ubah
+            const int n = 1 + (int) (rng.nextUInt() % 512); // varying block size
             for (int i = 0; i < n; ++i)
             {
                 l[(size_t) i] = 0.8f * rng.nextBipolar();

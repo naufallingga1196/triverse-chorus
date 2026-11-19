@@ -24,8 +24,8 @@ namespace palette
     const juce::Colour meterWindow  { 0xff0a0b0a };
 }
 
-// Sudut rotary JUCE: radian searah jarum jam dari arah jam 12.
-// 7:30 → 4:30, seperti knob hardware pada umumnya.
+// JUCE rotary angles: radians clockwise from 12 o'clock.
+// 7:30 → 4:30, like a typical hardware knob.
 constexpr float kRotaryStart = juce::MathConstants<float>::pi * 1.25f;
 constexpr float kRotaryEnd   = juce::MathConstants<float>::pi * 2.75f;
 

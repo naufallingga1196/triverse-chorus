@@ -6,7 +6,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
-// Panel rak 1U digambar pada kanvas logis tetap, lalu diskalakan ke ukuran editor.
+// 1U rack panel drawn on a fixed logical canvas, then scaled to the editor size.
 class FrontPanel final : public juce::Component
 {
 public:

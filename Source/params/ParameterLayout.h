@@ -24,7 +24,7 @@ namespace id
 
 inline const juce::StringArray shapeNames { "Sine", "Triangle", "Analog" };
 
-// Rentang logaritmik sejati (bukan sekadar skew).
+// A true logarithmic range (not just a skew).
 inline juce::NormalisableRange<float> logRange (float min, float max)
 {
     return { min, max,

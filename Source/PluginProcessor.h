@@ -40,7 +40,7 @@ public:
 
     juce::AudioProcessorValueTreeState& getState() noexcept { return state; }
 
-    // Peak output sejak terakhir dibaca GUI (dibaca lewat exchange).
+    // Output peak since the GUI last read it (read via exchange).
     float takePeak (int channel) noexcept { return peak[(size_t) channel].exchange (0.0f); }
 
 private:
@@ -61,7 +61,7 @@ private:
     std::atomic<float>* output = nullptr;
     juce::AudioParameterBool* bypassParam = nullptr;
 
-    // Crossfade bypass tanpa klik.
+    // Click-free bypass crossfade.
     juce::SmoothedValue<float> bypassMix;
     juce::AudioBuffer<float> dryBuffer;
 

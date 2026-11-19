@@ -27,24 +27,24 @@ struct TriChorusParams
     float outputDb  = 0.0f;
 };
 
-// Chorus tri-stereo Level A (modulated delay + filter + compander).
-// Tidak bergantung pada JUCE sehingga bisa diuji terpisah.
+// Level A tri-stereo chorus (modulated delay + filter + compander).
+// Has no JUCE dependency so it can be tested on its own.
 class TriChorusEngine
 {
 public:
     static constexpr int   kNumVoices      = 3;
-    static constexpr float kStages         = 1024.0f; // tahap BBD
-    static constexpr float kMaxClockDev    = 0.3f;    // deviasi clock pada intensity 100 %
+    static constexpr float kStages         = 1024.0f; // BBD stages
+    static constexpr float kMaxClockDev    = 0.3f;    // clock deviation at 100 % intensity
     static constexpr float kMaxDelayMs     = 20.0f;
-    static constexpr int   kSubBlock       = 32;      // laju update koefisien
+    static constexpr int   kSubBlock       = 32;      // coefficient update rate
 
     void prepare (double sampleRate, int maxBlockSize);
     void reset();
 
-    // immediate = true melompati smoothing (dipakai saat prepare / load state).
+    // immediate = true skips smoothing (used on prepare / state load).
     void setParameters (const TriChorusParams& p, bool immediate = false);
 
-    // Boleh in-place (inL == outL, inR == outR).
+    // May be in-place (inL == outL, inR == outR).
     void process (const float* inL, const float* inR, float* outL, float* outR, int numSamples) noexcept;
 
 private:
@@ -54,10 +54,10 @@ private:
     double sampleRate = 48000.0;
     float fs = 48000.0f;
 
-    // Parameter terhalus per sampel
+    // Parameters smoothed per sample
     LinearSmoother inputGain, outputGain, rate, delayMs, mix;
     std::array<LinearSmoother, kNumVoices> intensity;
-    // Parameter terhalus per sub-blok
+    // Parameters smoothed per sub-block
     LinearSmoother tone, character, width;
 
     LfoShape shape = LfoShape::Sine;
@@ -71,8 +71,8 @@ private:
 
     std::array<BbdFilter, kNumVoices> reconFilter;
     std::array<Expander, kNumVoices> expander;
-    std::array<OnePoleLowpass, kNumVoices> hfLoss;      // redaman HF bergantung clock
-    std::array<OnePoleLowpass, kNumVoices> modSmoother; // anti-klik saat ganti shape
+    std::array<OnePoleLowpass, kNumVoices> hfLoss;      // clock-dependent HF loss
+    std::array<OnePoleLowpass, kNumVoices> modSmoother; // prevents clicks when the shape changes
     float modSmoothCoef = 0.0f;
 
     BbdSaturation saturation;

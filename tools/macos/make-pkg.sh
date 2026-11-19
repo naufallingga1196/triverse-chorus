@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Membuat installer .pkg dari hasil build.
-# Pemakaian: tools/macos/make-pkg.sh <versi> [folder-build] [label-arsitektur]
-# Hasil: dist/TriVerse-Chorus-<versi>-macOS[-label].pkg
-#   contoh label: universal, arm64, x86_64
+# Builds a .pkg installer from the build output.
+# Usage: tools/macos/make-pkg.sh <version> [build-dir] [arch-label]
+# Output: dist/TriVerse-Chorus-<version>-macOS[-label].pkg
+#   example labels: universal, arm64, x86_64
 set -euo pipefail
 
-VERSION="${1:?pemakaian: make-pkg.sh <versi> [folder-build]}"
+VERSION="${1:?usage: make-pkg.sh <version> [build-dir] [arch-label]}"
 BUILD_DIR="${2:-build}"
 ARCH_LABEL="${3:-}"
 ART="$BUILD_DIR/TriVerseChorus_artefacts/Release"
@@ -20,7 +20,7 @@ cp -R "$ART/VST3/$NAME.vst3"      "$ROOT/Library/Audio/Plug-Ins/VST3/"
 cp -R "$ART/AU/$NAME.component"   "$ROOT/Library/Audio/Plug-Ins/Components/"
 cp -R "$ART/Standalone/$NAME.app" "$ROOT/Applications/"
 
-# Cegah Installer memasang ke salinan lama di lokasi lain (relocation).
+# Stop Installer from installing over an old copy found elsewhere (relocation).
 PLIST="$ROOT/../components.$$.plist"
 pkgbuild --analyze --root "$ROOT" "$PLIST" > /dev/null
 python3 - "$PLIST" <<'PY'
@@ -47,4 +47,4 @@ else
 fi
 rm -f "$PLIST" "$COMPONENT"
 
-echo "Dibuat: $OUT"
+echo "Created: $OUT"

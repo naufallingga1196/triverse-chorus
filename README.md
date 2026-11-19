@@ -14,6 +14,32 @@ Built with JUCE 8 / C++17.
 The goal is not to copy any single unit exactly, but to capture the **behaviour** and
 **character** of this kind of circuit under the product's own identity.
 
+## Download
+
+Installers for the latest release:
+
+| Platform | Installer | Contents |
+|---|---|---|
+| macOS — any Mac (recommended) | [TriVerse-Chorus-macOS-universal.pkg](https://github.com/naufallingga1196/triverse-chorus/releases/latest/download/TriVerse-Chorus-macOS-universal.pkg) | VST3, AU, Standalone · macOS 10.13+ |
+| macOS — Apple Silicon (M1 and later) | [TriVerse-Chorus-macOS-arm64.pkg](https://github.com/naufallingga1196/triverse-chorus/releases/latest/download/TriVerse-Chorus-macOS-arm64.pkg) | VST3, AU, Standalone · macOS 11+ |
+| macOS — Intel | [TriVerse-Chorus-macOS-x86_64.pkg](https://github.com/naufallingga1196/triverse-chorus/releases/latest/download/TriVerse-Chorus-macOS-x86_64.pkg) | VST3, AU, Standalone · macOS 10.13+ |
+| Windows 10/11 (64-bit) | [TriVerse-Chorus-Windows-Setup.exe](https://github.com/naufallingga1196/triverse-chorus/releases/latest/download/TriVerse-Chorus-Windows-Setup.exe) | VST3, Standalone |
+
+All versions and release notes: [Releases](https://github.com/naufallingga1196/triverse-chorus/releases).
+
+### Installing
+
+The installers are not code-signed yet, so the operating system will warn you the first time:
+
+- **macOS:** if the installer is blocked ("cannot be opened because it is from an
+  unidentified developer"), open **System Settings → Privacy & Security** and click
+  **Open Anyway**. The plugins go to `/Library/Audio/Plug-Ins/{VST3,Components}` and the
+  app to `/Applications`.
+- **Windows:** if SmartScreen shows "Windows protected your PC", click **More info → Run
+  anyway**. The plugin goes to `C:\Program Files\Common Files\VST3`.
+
+Afterwards, rescan plugins in your DAW. Look for **TriVerse Chorus** under modulation effects.
+
 ## Prerequisites
 
 ### macOS
@@ -78,8 +104,10 @@ on macOS and Windows, runs the unit tests, and produces installers:
 - Windows (VST3 + Standalone, x64), via [tools/windows/installer.iss](tools/windows/installer.iss):
   - `TriVerse-Chorus-<version>-Windows-Setup.exe`
 
-Build outputs can be downloaded from **Actions → latest run → Artifacts**. To publish a
-GitHub Release with all installers attached, push a version tag:
+Every run uploads versioned installers under **Actions → run → Artifacts** (GitHub login
+required, kept for 90 days). To publish a public GitHub Release, push a version tag. The
+release job strips the version from the file names (e.g. `TriVerse-Chorus-macOS-arm64.pkg`)
+so the links in [Download](#download) always point to the latest release:
 
 ```sh
 git tag v0.1.0 && git push origin v0.1.0

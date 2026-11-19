@@ -1,0 +1,110 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    name: macOS ${{ matrix.label }}
+    runs-on: macos-14   # Apple Silicon; arsitektur lain di-cross-compile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: universal
+            archs: "arm64;x86_64"
+            deploy: "10.13"
+            run_tests: true
+          - label: arm64
+            archs: "arm64"
+            deploy: "11.0"
+            run_tests: true
+          - label: x86_64
+            archs: "x86_64"
+            deploy: "10.13"
+            run_tests: false   # runner arm64 tidak menjamin Rosetta
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Baca versi
+        run: |
+          VERSION=$(sed -n 's/^project (.* VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Configure
+        run: >
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES="${{ matrix.archs }}"
+          -DCMAKE_OSX_DEPLOYMENT_TARGET="${{ matrix.deploy }}"
+          -DTRICHORUS_COPY_PLUGIN=OFF
+
+      - name: Build
+        run: cmake --build build --config Release -j4
+
+      - name: Unit test DSP
+        if: matrix.run_tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Buat installer .pkg
+        run: tools/macos/make-pkg.sh "$VERSION" build "${{ matrix.label }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macOS-${{ matrix.label }}-pkg
+          path: dist/*.pkg
+          if-no-files-found: error
+
+  windows:
+    name: Windows (VST3 + Standalone, x64)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Baca versi
+        shell: pwsh
+        run: |
+          $m = Select-String -Path CMakeLists.txt -Pattern '^project \(.* VERSION ([0-9.]+)' | Select-Object -First 1
+          "VERSION=$($m.Matches[0].Groups[1].Value)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Configure
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64 -DTRICHORUS_COPY_PLUGIN=OFF
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Unit test DSP
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Pasang Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Buat installer .exe
+        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$env:VERSION" tools\windows\installer.iss'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows-installer
+          path: dist/*.exe
+          if-no-files-found: error
+
+  release:
+    name: Rilis (hanya saat tag v*)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true

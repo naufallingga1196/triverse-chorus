@@ -10,7 +10,7 @@ on:
 jobs:
   macos:
     name: macOS ${{ matrix.label }}
-    runs-on: macos-14   # Apple Silicon; other architectures are cross-compiled
+    runs-on: macos-latest   # Apple Silicon; other architectures are cross-compiled
     strategy:
       fail-fast: false
       matrix:

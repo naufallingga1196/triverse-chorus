@@ -4,6 +4,8 @@ A three-voice stereo chorus plugin (VST3 / AU / Standalone) inspired by 1980s
 three-phase rack chorus units, known for the wide, "swirling" electric piano sound.
 Built with JUCE 8 / C++17.
 
+![TriVerse TV-3 front panel](docs/images/panel.png)
+
 - Three modulated delay lines running in parallel.
 - Three LFOs with a fixed 120° phase offset, so the modulation is never in sync.
 - Each voice sits at a different stereo position (left, centre, right), creating spatial
@@ -39,6 +41,33 @@ The installers are not code-signed yet, so the operating system will warn you th
   anyway**. The plugin goes to `C:\Program Files\Common Files\VST3`.
 
 Afterwards, rescan plugins in your DAW. Look for **TriVerse Chorus** under modulation effects.
+
+## Using the plugin
+
+The panel reads left to right in the same order as the signal path.
+
+| Section | Control | What it does |
+|---|---|---|
+| **LFO Shape** | Select button + Sine / Tri / Anlg LEDs | Waveform of the three LFOs. *Sine* is smooth, *Tri* has a more even sweep, *Anlg* is a rounded triangle like the original circuits. |
+| **Voicing** | Tone (Dark … Bright) | Cutoff of the BBD filters, 4–14 kHz. Lower values give a darker, more vintage sound. |
+| | Character | Amount of analog "dirt": BBD saturation, background noise, and slow random drift of the LFOs. |
+| | Width (Mono … Wide) | Stereo spread of the three voices (left, centre, right). Mono collapses them to the centre. |
+| **Intensity** | I / II / III (Min … Max) | Modulation depth of each voice separately. Equal settings give the classic sound; unequal ones make the movement less regular. |
+| | Delay (2–20 ms) | Centre delay time. Short values sound like chorus, long ones like slapback doubling. |
+| | Rate (Slow … Fast) | LFO speed, 0.05–10 Hz. The three LFOs always stay 120° apart. |
+| **Levels** | Input (−12 … +12 dB) | Gain before the effect. Higher values push the soft clipper. |
+| | Mix (Dry … Wet) | Balance between the original and chorused signal. 50 % is the classic setting. |
+| | Output (−12 … +12 dB) | Final output gain. |
+| **Out Level** | Ch.L / Ch.R meter | Output peak level per channel (−20 to +6 dB). |
+| **Effect** | Red button | Effect on (lit) or bypassed (dark). Switching is click-free. |
+
+Tips:
+
+- Double-click any knob to reset it to its default.
+- Drag up/down to turn a knob; the exact value is shown while dragging.
+- The window can be resized from the bottom-right corner; it keeps its proportions.
+- Starting point for electric piano: Rate 0.6 Hz, Intensity 45 % on all three voices,
+  Delay 7 ms, Mix 50 % (these are the defaults).
 
 ## Prerequisites
 
@@ -121,13 +150,16 @@ To build a `.pkg` locally: `tools/macos/make-pkg.sh 0.1.0 build x86_64` (output 
 
 ## GUI snapshot
 
-Render the panel to a PNG without a DAW (useful for reviewing the look):
+Render the panel to a PNG without a DAW (useful for reviewing the look). This is how the
+screenshot at the top of this README is made; rerun it after changing the GUI:
 
 ```sh
 cmake -B build -DTRICHORUS_BUILD_TOOLS=ON
 cmake --build build --target trichorus_snapshot
-./build/trichorus_snapshot_artefacts/Release/trichorus_snapshot panel.png 2
+./build/trichorus_snapshot_artefacts/Release/trichorus_snapshot docs/images/panel.png 1.5
 ```
+
+The last argument is the scale factor (1.5 gives 1980×300 pixels).
 
 ## Project structure
 
@@ -146,7 +178,12 @@ Source/
     ├── Saturation.h
     └── PanMatrix.h
 tests/DspUnitTests.cpp     Numerical DSP tests
-tools/                     Installer scripts and GUI snapshot tool
+tools/
+├── Snapshot.cpp           Renders the GUI to a PNG
+├── macos/make-pkg.sh      macOS .pkg installer
+└── windows/installer.iss  Windows .exe installer (Inno Setup)
+docs/images/               Screenshots used in this README
+.github/workflows/         CI build, tests, installers, releases
 ```
 
 DSP classes do not depend on JUCE, so they can be tested on their own.
